@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAISSE-ENREGISTREUSE - Présentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('CAISIER.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(6px) brightness(0.4) saturate(1.2);
+            z-index: 1;
+            transform: scale(1.02);
+        }
+
+        .content-overlay {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 50px;
+            border-radius: 24px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .logo-presentation {
+            font-size: 56px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            letter-spacing: -1px;
+        }
+
+        .logo-presentation span:first-child,
+        .logo-presentation span:last-child {
+            font-size: 64px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .logo-presentation span:nth-child(2) {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            color: #2c3e50;
+            font-size: 42px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            line-height: 1.2;
+            position: relative;
+            display: inline-block;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            border-radius: 2px;
+        }
+
+        .subtitle {
+            color: #5a6c7d;
+            font-size: 20px;
+            margin-bottom: 50px;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 400;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            padding: 30px 25px;
+            border-radius: 18px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(155, 89, 182, 0.1));
+            color: #3498db;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .feature-desc {
+            font-size: 15px;
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .launch-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            padding: 22px 50px;
+            border-radius: 16px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            cursor: pointer;
+            box-shadow: 
+                0 12px 35px rgba(46, 204, 113, 0.4),
+                0 4px 15px rgba(46, 204, 113, 0.3);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .launch-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s;
+        }
+
+        .launch-btn:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 
+                0 20px 50px rgba(46, 204, 113, 0.5),
+                0 8px 25px rgba(46, 204, 113, 0.4);
+        }
+
+        .launch-btn:hover::before {
+            left: 100%;
+        }
+
+        .launch-btn:active {
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .test-accounts {
+            margin-top: 50px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(248, 249, 250, 0.9), rgba(233, 236, 239, 0.9));
+            border-radius: 16px;
+            border-left: 5px solid #3498db;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-accounts::before {
+            content: '🔐';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            opacity: 0.3;
+        }
+
+        .test-accounts h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .account-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            text-align: left;
+        }
+
+        .account-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .account-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .account-role {
+            font-weight: 700;
+            color: #3498db;
+            margin-bottom: 8px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .account-credentials {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .reveal-btn {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .reveal-btn:hover {
+            background: linear-gradient(135deg, #5a6268, #495057);
+            transform: translateY(-2px);
+        }
+
+        .credentials-hidden {
+            font-style: italic;
+            color: #adb5bd;
+            font-size: 14px;
+        }
+
+        .credentials-visible {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #495057;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .warning-note {
+            margin-top: 20px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(192, 57, 43, 0.1));
+            border-radius: 10px;
+            border-left: 4px solid #e74c3c;
+            font-size: 13px;
+            color: #c0392b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer p:last-child {
+            font-size: 13px;
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content-overlay {
+                padding: 40px 25px;
+            }
+            
+            .logo-presentation {
+                font-size: 42px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .logo-presentation span:first-child,
+            .logo-presentation span:last-child {
+                font-size: 48px;
+            }
+            
+            .title {
+                font-size: 32px;
+            }
+            
+            .subtitle {
+                font-size: 18px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .launch-btn {
+                font-size: 20px;
+                padding: 18px 35px;
+            }
+            
+            .account-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content-overlay {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            
+            .logo-presentation {
+                font-size: 36px;
+            }
+            
+            .title {
+                font-size: 28px;
+            }
+            
+            .subtitle {
+                font-size: 16px;
+            }
+            
+            .feature-card {
+                padding: 25px 20px;
+            }
+            
+            .launch-btn {
+                width: 100%;
+                justify-content: center;
+                font-size: 18px;
+                padding: 16px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2980b9, #8e44ad);
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="background-image"></div>
+        
+        <div class="content-overlay">
+            <div class="logo-presentation">
+                <span>💳</span>
+                <span>CAISSE-ENREGISTREUSE</span>
+                <span>💰</span>
+            </div>
+            
+            <h1 class="title">Système Complet de Gestion</h1>
+            
+            <p class="subtitle">
+                Solution professionnelle pour optimiser vos opérations de vente. 
+                Interface intuitive, analyses détaillées et gestion sécurisée 
+                multi-utilisateurs en temps réel.
+            </p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💸</div>
+                    <h3 class="feature-title">Caisse Intelligente</h3>
+                    <p class="feature-desc">
+                        Enregistrement rapide, codes-barres, multiples modes de paiement 
+                        et tickets professionnels.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3 class="feature-title">Gestion des Stocks</h3>
+                    <p class="feature-desc">
+                        Surveillance temps réel, alertes automatiques et 
+                        historique complet des mouvements.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Analytics Avancés</h3>
+                    <p class="feature-desc">
+                        Dashboards interactifs, rapports détaillés et 
+                        analyses de performance.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍💼</div>
+                    <h3 class="feature-title">Sécurité Multi-niveaux</h3>
+                    <p class="feature-desc">
+                        Contrôle d'accès par rôle, audit complet et 
+                        sauvegarde automatique des données.
+                    </p>
+                </div>
+            </div>
+            
+            <a href="CAISIER.html" class="launch-btn" id="launchButton">
+                <span>🚀</span>
+                Démarrer l'Application
+                <span>→</span>
+            </a>
+            
+            <div class="test-accounts">
+                <h3>
+                    <span>🔐</span>
+                    Accès de Démonstration
+                </h3>
+                <div class="account-list">
+                    <div class="account-item">
+                        <div class="account-role">
+                            <span>👑</span>
+                            Super Administrateur
+                        </div>
+                        <p class="credentials-hidden">
+                            Identifiants protégés - Cliquez pour révéler
+                        </p>
+                        <div class="account-credentials">
+                            <button class="reveal-btn" onclick="toggleCredentials('admin')">
+                                <span>👁️</span>
+                                Afficher les identifiants
+                            </button>
+                            <div id="adminCredentials" class="credentials-visible" style="display: none;">
+                                Utilisateur: <strong>admin</strong><br>
+                                Mot de passe: <strong>admin123</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="account-item">
+                        <div class="account-role">
+                            <span>👨‍💼</span>
+                            Caissier Principal
+                        </div>
+                        <p class="credentials-hidden">
+                            Identifiants protégés - Cliquez pour révéler
+                        </p>
+                        <div class="account-credentials">
+                            <button class="reveal-btn" onclick="toggleCredentials('cashier1')">
+                                <span>👁️</span>
+                                Afficher les identifiants
+                            </button>
+                            <div id="cashier1Credentials" class="credentials-visible" style="display: none;">
+                                Utilisateur: <strong>user1</strong><br>
+                                Mot de passe: <strong>user123</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="account-item">
+                        <div class="account-role">
+                            <span>👩‍💼</span>
+                            Caissier Suppléant
+                        </div>
+                        <p class="credentials-hidden">
+                            Identifiants protégés - Cliquez pour révéler
+                        </p>
+                        <div class="account-credentials">
+                            <button class="reveal-btn" onclick="toggleCredentials('cashier2')">
+                                <span>👁️</span>
+                                Afficher les identifiants
+                            </button>
+                            <div id="cashier2Credentials" class="credentials-visible" style="display: none;">
+                                Utilisateur: <strong>user2</strong><br>
+                                Mot de passe: <strong>user456</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="warning-note">
+                    <span>⚠️</span>
+                    Ces identifiants sont réservés aux démonstrations et tests
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Système de Caisse-Enregistreuse Professionnelle © 2024</p>
+        <p>Interface HTML5 moderne avec sauvegarde locale sécurisée</p>
+    </div>
+
+    <script>
+        // Fonction pour afficher/masquer les identifiants
+        function toggleCredentials(type) {
+            const credentials = document.getElementById(`${type}Credentials`);
+            const button = event.currentTarget;
+            
+            if (credentials.style.display === 'none' || credentials.style.display === '') {
+                // Afficher les identifiants
+                credentials.style.display = 'block';
+                button.innerHTML = '<span>🔒</span> Masquer les identifiants';
+                
+                // Masquer automatiquement après 30 secondes
+                setTimeout(() => {
+                    if (credentials.style.display === 'block') {
+                        credentials.style.display = 'none';
+                        button.innerHTML = '<span>👁️</span> Afficher les identifiants';
+                    }
+                }, 30000);
+            } else {
+                // Masquer les identifiants
+                credentials.style.display = 'none';
+                button.innerHTML = '<span>👁️</span> Afficher les identifiants';
+            }
+        }
+        
+        // Animation pour le bouton de lancement
+        const launchBtn = document.getElementById('launchButton');
+        
+        launchBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.05)';
+        });
+        
+        launchBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+        
+        // Confirmation avant lancement
+        launchBtn.addEventListener('click', function(e) {
+            if (!confirm('Prêt à accéder au système de caisse ?\n\nVous serez redirigé vers l\'interface principale.')) {
+                e.preventDefault();
+            }
+        });
+        
+        // Vérifier si le fichier existe
+        window.addEventListener('load', function() {
+            fetch('CAISIER.html')
+                .then(response => {
+                    if (!response.ok) {
+                        const errorMsg = document.createElement('div');
+                        errorMsg.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: #e74c3c;
+                            color: white;
+                            padding: 15px 20px;
+                            border-radius: 10px;
+                            z-index: 10000;
+                            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                            animation: fadeInUp 0.3s ease-out;
+                        `;
+                        errorMsg.innerHTML = `
+                            <strong>⚠️ Fichier manquant</strong><br>
+                            CAISIER.html n'est pas dans ce dossier
+                        `;
+                        document.body.appendChild(errorMsg);
+                        
+                        setTimeout(() => {
+                            errorMsg.style.animation = 'fadeOut 0.3s ease-out';
+                            setTimeout(() => errorMsg.remove(), 300);
+                        }, 5000);
+                    }
+                })
+                .catch(error => {
+                    console.warn('Impossible de vérifier le fichier:', error);
+                });
+        });
+        
+        // Animation des cartes au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+        
+        // Ajouter une animation pour le scroll
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const background = document.querySelector('.background-image');
+            if (background) {
+                background.style.transform = `scale(${1 + scrolled * 0.0002})`;
+            }
+        });
+    </script>
+</body>
+</html>

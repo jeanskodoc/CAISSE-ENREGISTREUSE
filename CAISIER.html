@@ -1,0 +1,3415 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAISSE-ENREGISTREUSE - Système Complet</title>
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid transparent;
+            margin: 5px 10px;
+            border-radius: 8px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-item.active {
+            background: rgba(52, 152, 219, 0.2);
+            border-left-color: #3498db;
+            color: #3498db;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f7fa;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .role-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .role-admin {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .role-user {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        /* Login Screen */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #d68910);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        /* Dashboard */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        /* Section Titles */
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Form rows */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Cash Register */
+        .cash-register {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .product-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: #3498db;
+        }
+
+        .ticket {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .ticket-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #ddd;
+        }
+
+        .ticket-items {
+            margin-bottom: 25px;
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .ticket-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ticket-total {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px solid #ddd;
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stats-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 5px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: #f8f9fa;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert-error {
+            background-color: #fde8e8;
+            color: #c81e1e;
+            border-left: 4px solid #fbd5d5;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #a7f3d0;
+        }
+
+        .alert-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid #fde68a;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 25px;
+            gap: 5px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tabs::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .tabs::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 2px;
+        }
+
+        .tabs::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 2px;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+            color: #7f8c8d;
+            border-radius: 8px 8px 0 0;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .tab:hover {
+            color: #3498db;
+            background: #f8f9fa;
+        }
+
+        .tab.active {
+            border-bottom-color: #3498db;
+            color: #3498db;
+            font-weight: 600;
+            background: #f8f9fa;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Input groups */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-group input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Badges */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fde8e8;
+            color: #c81e1e;
+        }
+
+        .badge-info {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        /* Progress bars */
+        .progress {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            transition: width 0.3s;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .cash-register {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .input-group input {
+                min-width: 100%;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+            
+            .modal-content {
+                padding: 25px;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-form">
+            <h2>CAISSE-ENREGISTREUSE</h2>
+            <div id="loginAlert" class="alert" style="display: none;"></div>
+            <div class="form-group">
+                <label>Nom d'utilisateur</label>
+                <input type="text" id="username" placeholder="Entrez votre nom" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" id="password" placeholder="Entrez votre mot de passe" autocomplete="current-password">
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="login()">
+                🔐 Se connecter
+            </button>
+            <div style="margin-top: 25px; font-size: 12px; color: #7f8c8d; text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <div><strong>Comptes de test :</strong></div>
+                <div style="margin-top: 8px;">Admin : admin / admin123</div>
+                <div>Caissier : user1 / user123</div>
+                <div style="margin-top: 8px; font-size: 11px; color: #e74c3c;">⚠️ Ces identifiants sont pour le test uniquement</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="appContainer" class="container" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">💰 CAISSE</div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="showSection('dashboard')">
+                    📊 Tableau de bord
+                </li>
+                <li class="nav-item" onclick="showSection('caisse')">
+                    💰 Caisse
+                </li>
+                <li class="nav-item" onclick="showSection('articles')">
+                    📦 Articles
+                </li>
+                <li class="nav-item" onclick="showSection('stock')">
+                    📈 Stock
+                </li>
+                <li class="nav-item" onclick="showSection('statistiques')">
+                    📊 Statistiques
+                </li>
+                <li class="nav-item" onclick="showSection('rapports')">
+                    📋 Rapports
+                </li>
+                <li class="nav-item" onclick="logout()" style="margin-top: auto; background: rgba(231, 76, 60, 0.1);">
+                    🚪 Déconnexion
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1 id="sectionTitle">Tableau de bord</h1>
+                <div class="user-info">
+                    <span id="currentUser">Utilisateur</span>
+                    <span id="userRoleBadge" class="role-badge">Rôle</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboardSection">
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h3>💰 Ventes du jour</h3>
+                        <div class="card-value" id="salesToday">0 FCFA</div>
+                        <div class="card-subtitle" id="salesTodayCount">0 transactions</div>
+                    </div>
+                    <div class="card">
+                        <h3>📈 CA du mois</h3>
+                        <div class="card-value" id="monthlySales">0 FCFA</div>
+                        <div class="card-subtitle" id="monthlySalesCount">0 transactions</div>
+                    </div>
+                    <div class="card">
+                        <h3>👤 Votre performance</h3>
+                        <div class="card-value" id="userPerformance">0 FCFA</div>
+                        <div class="card-subtitle" id="userTransactions">0 transactions</div>
+                    </div>
+                    <div class="card">
+                        <h3>🏆 Produit du jour</h3>
+                        <div class="card-value" id="topProductToday">-</div>
+                        <div class="card-subtitle" id="topProductQuantity">0 unités</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <h3 class="section-title">📊 Vos statistiques</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Période</th>
+                                <th>Transactions</th>
+                                <th>Articles</th>
+                                <th>Chiffre d'affaire</th>
+                                <th>Moyenne/ticket</th>
+                            </tr>
+                        </thead>
+                        <tbody id="personalStats">
+                            <tr><td colspan="5" style="text-align: center; padding: 30px; color: #7f8c8d;">Chargement...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-container" style="margin-top: 25px;">
+                    <h3 class="section-title">🔄 Dernières transactions</h3>
+                    <table id="recentTransactions">
+                        <thead>
+                            <tr>
+                                <th>N° Ticket</th>
+                                <th>Date</th>
+                                <th>Montant</th>
+                                <th>Mode paiement</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="5" style="text-align: center; padding: 30px; color: #7f8c8d;">Aucune transaction récente</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Cash Register Section -->
+            <div id="caisseSection" style="display: none;">
+                <div class="cash-register">
+                    <div>
+                        <h2 class="section-title">💰 Nouveau Ticket</h2>
+                        
+                        <div class="input-group">
+                            <input type="text" id="barcodeInput" placeholder="Code barre ou référence article" 
+                                   onkeypress="if(event.key === 'Enter') addByBarcode()">
+                            <button class="btn btn-primary" onclick="addByBarcode()">
+                                ➕ Ajouter
+                            </button>
+                            <button class="btn btn-warning" onclick="clearTicket()">
+                                ✖️ Annuler
+                            </button>
+                            <button class="btn btn-success" onclick="processPayment()">
+                                💳 Paiement
+                            </button>
+                        </div>
+
+                        <div class="table-container">
+                            <table id="ticketTable">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Article</th>
+                                        <th>Prix unit.</th>
+                                        <th>Quantité</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ticketItems">
+                                    <tr><td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">Aucun article ajouté</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3 class="section-title" style="margin-top: 30px;">⚡ Articles rapides</h3>
+                        <div class="products-grid" id="quickProducts">
+                            <!-- Produits chargés dynamiquement -->
+                        </div>
+                    </div>
+
+                    <div class="ticket">
+                        <div class="ticket-header">
+                            <h3>🎫 Ticket #<span id="ticketNumber">0001</span></h3>
+                            <p id="ticketDate" style="color: #7f8c8d; margin-top: 5px;">Date du jour</p>
+                        </div>
+                        <div class="ticket-items" id="ticketPreview">
+                            <div style="text-align: center; padding: 40px; color: #7f8c8d;">Ticket vide</div>
+                        </div>
+                        <div style="margin: 25px 0;">
+                            <div class="form-group">
+                                <label>🎯 Remise (FCFA)</label>
+                                <input type="number" id="discount" value="0" min="0" onchange="updateTicket()">
+                            </div>
+                            <div class="form-group">
+                                <label>💳 Mode de paiement</label>
+                                <select id="paymentMethod" onchange="updateTicket()" class="form-control">
+                                    <option value="especes">💰 Espèces</option>
+                                    <option value="carte">💳 Carte bancaire</option>
+                                    <option value="mobile">📱 Mobile Money</option>
+                                    <option value="cheque">📝 Chèque</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="ticket-total">
+                            <div>Total: <span id="ticketTotal">0</span> FCFA</div>
+                            <div>Remise: <span id="ticketDiscount">0</span> FCFA</div>
+                            <div style="color: #2ecc71; font-size: 26px; font-weight: bold; margin-top: 10px;">
+                                À payer: <span id="ticketToPay">0</span> FCFA
+                            </div>
+                        </div>
+                        <button class="btn btn-success" style="width: 100%; margin-top: 25px; padding: 15px;" 
+                                onclick="finalizeTicket()" id="finalizeBtn">
+                            ✅ Finaliser le ticket
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles Section -->
+            <div id="articlesSection" style="display: none;">
+                <h2 class="section-title">📦 Gestion des articles</h2>
+                
+                <div class="card" style="margin-bottom: 30px;" id="addArticleCard">
+                    <h3>➕ Ajouter un nouvel article</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Code article *</label>
+                            <input type="text" id="newCode" placeholder="REF001">
+                        </div>
+                        <div class="form-group">
+                            <label>Nom de l'article *</label>
+                            <input type="text" id="newName" placeholder="Nom du produit">
+                        </div>
+                        <div class="form-group">
+                            <label>Prix (FCFA) *</label>
+                            <input type="number" id="newPrice" placeholder="1000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Stock initial *</label>
+                            <input type="number" id="newStock" placeholder="58" min="0">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addNewArticle()" id="addArticleBtn">
+                        ➕ Ajouter l'article
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table id="articlesTable">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Article</th>
+                                <th>Prix</th>
+                                <th>Stock</th>
+                                <th>Ventes totales</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">Chargement des articles...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Stock Section -->
+            <div id="stockSection" style="display: none;">
+                <h2 class="section-title">📈 Stock en temps réel</h2>
+                <div class="table-container">
+                    <table id="stockTable">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Article</th>
+                                <th>Stock actuel</th>
+                                <th>Seuil min</th>
+                                <th>Statut</th>
+                                <th>Ventes 30j</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="7" style="text-align: center; padding: 40px; color: #7f8c8d;">Chargement du stock...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div id="statistiquesSection" style="display: none;">
+                <h2 class="section-title">📊 Statistiques de ventes</h2>
+                
+                <div class="tabs">
+                    <div class="tab active" onclick="showStatTab('general')">📈 Général</div>
+                    <div class="tab" onclick="showStatTab('products')">📦 Produits</div>
+                    <div class="tab" onclick="showStatTab('users')">👤 Utilisateurs</div>
+                    <div class="tab" onclick="showStatTab('periodes')">📅 Périodes</div>
+                    <div class="tab" onclick="showStatTab('topProducts')">🏆 Top Produits</div>
+                </div>
+
+                <!-- General Stats Tab -->
+                <div id="generalStatsTab" class="tab-content active">
+                    <div class="stats-grid">
+                        <div class="stats-card">
+                            <div class="stats-header">
+                                <h3>📊 Vue d'ensemble</h3>
+                                <span class="badge badge-info" id="currentMonthLabel"></span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 15px;">
+                                <div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">CA Total Mois</div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #3498db;" id="totalSalesMonth">0 FCFA</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">Transactions</div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #2ecc71;" id="totalTransactionsMonth">0</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">Articles Vendus</div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #9b59b6;" id="totalItemsMonth">0</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 12px; color: #7f8c8d;">Panier Moyen</div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #f39c12;" id="avgTicketMonth">0 FCFA</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stats-card">
+                            <div class="stats-header">
+                                <h3>📈 Évolution Journalière (7 jours)</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="dailySalesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card" style="margin-top: 25px;">
+                        <div class="stats-header">
+                            <h3>👥 Performance des Utilisateurs</h3>
+                            <select id="performancePeriod" onchange="loadUsersPerformance()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd;">
+                                <option value="month">Ce mois</option>
+                                <option value="week">Cette semaine</option>
+                                <option value="today">Aujourd'hui</option>
+                            </select>
+                        </div>
+                        <table class="stats-table" id="usersPerformanceTable">
+                            <thead>
+                                <tr>
+                                    <th>Utilisateur</th>
+                                    <th>Transactions</th>
+                                    <th>CA</th>
+                                    <th>Panier moyen</th>
+                                    <th>Part</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Chargement...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Products Stats Tab -->
+                <div id="productsStatsTab" class="tab-content">
+                    <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                        <select id="productStatPeriod" onchange="loadProductDetails()" style="padding: 10px 15px; border-radius: 8px; border: 2px solid #ddd; min-width: 200px;">
+                            <option value="today">Aujourd'hui</option>
+                            <option value="week">Cette semaine</option>
+                            <option value="month" selected>Ce mois</option>
+                            <option value="year">Cette année</option>
+                            <option value="all">Toutes</option>
+                        </select>
+                        <button class="btn btn-info" onclick="refreshProductStats()">
+                            🔄 Actualiser
+                        </button>
+                    </div>
+
+                    <div class="stats-card">
+                        <div class="stats-header">
+                            <h3>📊 Ventes par Produit</h3>
+                            <span class="badge badge-info" id="productPeriodLabel">Ce mois</span>
+                        </div>
+                        <div class="chart-container" style="height: 250px; margin-bottom: 20px;">
+                            <canvas id="productSalesChart"></canvas>
+                        </div>
+                        <table class="stats-table" id="productDetailsTable">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Quantité</th>
+                                    <th>CA</th>
+                                    <th>% du total</th>
+                                    <th>Part</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Chargement...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Users Stats Tab -->
+                <div id="usersStatsTab" class="tab-content">
+                    <div style="margin-bottom: 20px;">
+                        <select id="userStatPeriod" onchange="loadUsersRanking()" style="padding: 10px 15px; border-radius: 8px; border: 2px solid #ddd; min-width: 200px;">
+                            <option value="today">Aujourd'hui</option>
+                            <option value="week">Cette semaine</option>
+                            <option value="month" selected>Ce mois</option>
+                            <option value="year">Cette année</option>
+                            <option value="all">Toutes</option>
+                        </select>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stats-card">
+                            <h3>🏆 Classement des Utilisateurs</h3>
+                            <table class="stats-table" id="usersRankingTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rang</th>
+                                        <th>Utilisateur</th>
+                                        <th>CA</th>
+                                        <th>Transactions</th>
+                                        <th>Performance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="stats-card">
+                            <div class="stats-header">
+                                <h3>📊 Distribution des Ventes</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="userDistributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card" style="margin-top: 25px;">
+                        <h3>⭐ Meilleur Performeur</h3>
+                        <div id="bestPerformerContainer" style="text-align: center; padding: 30px;">
+                            <div style="font-size: 48px;">🏆</div>
+                            <div id="bestPerformerName" style="font-size: 24px; margin: 10px 0; color: #3498db;">-</div>
+                            <div id="bestPerformerAmount" style="font-size: 18px; color: #2ecc71;">0 FCFA</div>
+                            <div id="bestPerformerDetails" style="color: #7f8c8d; margin-top: 10px;">0 transactions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Periods Stats Tab -->
+                <div id="periodesStatsTab" class="tab-content">
+                    <div style="margin-bottom: 20px;">
+                        <select id="periodYearSelect" onchange="loadPeriodStats()" style="padding: 10px 15px; border-radius: 8px; border: 2px solid #ddd; min-width: 150px;">
+                            <!-- Options chargées dynamiquement -->
+                        </select>
+                        <select id="periodTypeSelect" onchange="loadPeriodStats()" style="padding: 10px 15px; border-radius: 8px; border: 2px solid #ddd; margin-left: 10px; min-width: 150px;">
+                            <option value="monthly">Mensuel</option>
+                            <option value="quarterly">Trimestriel</option>
+                            <option value="yearly">Annuel</option>
+                        </select>
+                    </div>
+
+                    <div class="stats-card">
+                        <div class="stats-header">
+                            <h3 id="periodChartTitle">📅 Ventes Mensuelles</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="periodSalesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="stats-card" style="margin-top: 25px;">
+                        <h3>📋 Détails par Période</h3>
+                        <table class="stats-table" id="periodDetailsTable">
+                            <thead>
+                                <tr>
+                                    <th>Période</th>
+                                    <th>CA</th>
+                                    <th>Transactions</th>
+                                    <th>Articles</th>
+                                    <th>Croissance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Chargement...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top Products Tab -->
+                <div id="topProductsTab" class="tab-content">
+                    <div style="margin-bottom: 20px;">
+                        <select id="topProductsPeriod" onchange="loadTopProductsStats()" style="padding: 10px 15px; border-radius: 8px; border: 2px solid #ddd; min-width: 200px;">
+                            <option value="today">Aujourd'hui</option>
+                            <option value="week">Cette semaine</option>
+                            <option value="month" selected>Ce mois</option>
+                            <option value="year">Cette année</option>
+                            <option value="all">Toutes</option>
+                        </select>
+                        <select id="topProductsLimit" onchange="loadTopProductsStats()" style="padding: 10px 15px; border-radius: 8px; border: 2px solid #ddd; margin-left: 10px; min-width: 100px;">
+                            <option value="5">Top 5</option>
+                            <option value="10">Top 10</option>
+                            <option value="20">Top 20</option>
+                        </select>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stats-card">
+                            <h3>🏆 Produits les Plus Vendus</h3>
+                            <table class="stats-table" id="topProductsTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Produit</th>
+                                        <th>Quantité</th>
+                                        <th>CA</th>
+                                        <th>Part</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="stats-card">
+                            <div class="stats-header">
+                                <h3>📊 Répartition des Ventes</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="topProductsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card" style="margin-top: 25px;">
+                        <h3>📈 Évolution des Produits Stars</h3>
+                        <div class="chart-container">
+                            <canvas id="productsTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="rapportsSection" style="display: none;">
+                <h2 class="section-title">📋 Rapports des ventes</h2>
+                <div class="input-group" style="margin-bottom: 25px;">
+                    <select id="reportPeriod" onchange="loadReports()" style="flex: 1;">
+                        <option value="today">Aujourd'hui</option>
+                        <option value="week">Cette semaine</option>
+                        <option value="month">Ce mois</option>
+                        <option value="year">Cette année</option>
+                        <option value="all">Toutes</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="exportReport()">
+                        📊 Exporter Excel
+                    </button>
+                    <button class="btn btn-success" onclick="sendReportToWhatsApp()">
+                        📱 Envoyer WhatsApp
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="salesReport">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>N° Ticket</th>
+                                <th>Caissier</th>
+                                <th>Articles</th>
+                                <th>Quantité</th>
+                                <th>Montant</th>
+                                <th>Mode paiement</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="8" style="text-align: center; padding: 40px; color: #7f8c8d;">Chargement des rapports...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💳 Paiement</h2>
+                <button class="close-modal" onclick="closeModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label>Montant total: <span id="modalTotal" style="font-weight: bold; color: #3498db;">0</span> FCFA</label>
+            </div>
+            <div class="form-group">
+                <label>Montant payé (FCFA) *</label>
+                <input type="number" id="amountPaid" placeholder="Entrez le montant" min="0" 
+                       oninput="calculateChange()" autofocus>
+            </div>
+            <div class="form-group">
+                <label>Monnaie rendue: <span id="changeAmount" style="color: #27ae60; font-weight: bold; font-size: 18px;">0</span> FCFA</label>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button class="btn btn-success" onclick="confirmPayment()" style="flex: 1; padding: 15px;">
+                    ✅ Confirmer paiement
+                </button>
+                <button class="btn btn-danger" onclick="closeModal()" style="flex: 1; padding: 15px;">
+                    ❌ Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Modifier l'article</h2>
+                <button class="close-modal" onclick="closeEditModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label>Code article</label>
+                <input type="text" id="editCode" readonly style="background: #f8f9fa;">
+            </div>
+            <div class="form-group">
+                <label>Nom de l'article *</label>
+                <input type="text" id="editName">
+            </div>
+            <div class="form-group">
+                <label>Prix (FCFA) *</label>
+                <input type="number" id="editPrice" min="0">
+            </div>
+            <div class="form-group">
+                <label>Stock actuel *</label>
+                <input type="number" id="editStock" min="0">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button class="btn btn-success" onclick="saveProductEdit()" style="flex: 1; padding: 15px;">
+                    💾 Enregistrer
+                </button>
+                <button class="btn btn-danger" onclick="closeEditModal()" style="flex: 1; padding: 15px;">
+                    ❌ Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+    <script>
+        // ==================== DONNÉES ET CONFIGURATION ====================
+        let currentUser = null;
+        let currentRole = null;
+        let currentTicket = [];
+        let ticketCounter = 1;
+        let editingProductIndex = -1;
+        let whatsappNumber = "+22892871605";
+        let charts = {};
+        
+        // Identifiants de test
+        const VALID_CREDENTIALS = {
+            'admin': { password: 'admin123', role: 'admin' },
+            'user1': { password: 'user123', role: 'user' },
+            'user2': { password: 'user456', role: 'user' }
+        };
+        
+        // Charger les données
+        let products = JSON.parse(localStorage.getItem('products')) || [
+            { code: 'REF001', name: 'Coca-Cola 33cl', price: 500, stock: 48, totalSold: 0 },
+            { code: 'REF002', name: 'Eau minérale 1L', price: 300, stock: 100, totalSold: 0 },
+            { code: 'REF003', name: 'Pain complet', price: 250, stock: 30, totalSold: 0 },
+            { code: 'REF004', name: 'Lait 1L', price: 700, stock: 25, totalSold: 0 },
+            { code: 'REF005', name: 'Sucre 1kg', price: 850, stock: 40, totalSold: 0 }
+        ];
+        
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        let userStats = JSON.parse(localStorage.getItem('userStats')) || {};
+
+        // ==================== FONCTIONS UTILITAIRES ====================
+        function showAlert(message, type = 'info', duration = 5000) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    ${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}
+                    <span>${message}</span>
+                </div>
+            `;
+            alertDiv.style.cssText = `
+                margin-bottom: 10px;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            document.getElementById('alertContainer').appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => alertDiv.remove(), 300);
+            }, duration);
+            
+            return alertDiv;
+        }
+
+        function saveAllData() {
+            try {
+                localStorage.setItem('products', JSON.stringify(products));
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                localStorage.setItem('userStats', JSON.stringify(userStats));
+                localStorage.setItem('ticketCounter', ticketCounter.toString());
+            } catch (e) {
+                showAlert('Erreur de sauvegarde des données', 'error');
+            }
+        }
+
+        function getPaymentMethodLabel(method) {
+            const labels = {
+                'especes': '💰 Espèces',
+                'carte': '💳 Carte',
+                'mobile': '📱 Mobile',
+                'cheque': '📝 Chèque'
+            };
+            return labels[method] || method;
+        }
+
+        function filterTransactionsByPeriod(period) {
+            const now = new Date();
+            let filtered = [...transactions];
+            
+            switch(period) {
+                case 'today':
+                    const today = now.toDateString();
+                    filtered = transactions.filter(t => new Date(t.date).toDateString() === today);
+                    break;
+                case 'week':
+                    const weekStart = new Date(now);
+                    weekStart.setDate(now.getDate() - now.getDay());
+                    filtered = transactions.filter(t => new Date(t.date) >= weekStart);
+                    break;
+                case 'month':
+                    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                    filtered = transactions.filter(t => new Date(t.date) >= monthStart);
+                    break;
+                case 'year':
+                    const yearStart = new Date(now.getFullYear(), 0, 1);
+                    filtered = transactions.filter(t => new Date(t.date) >= yearStart);
+                    break;
+            }
+            
+            return filtered;
+        }
+
+        // ==================== GESTION DE LA SESSION ====================
+        function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const loginAlert = document.getElementById('loginAlert');
+
+            if (!username || !password) {
+                showAlert('Veuillez entrer vos identifiants', 'error');
+                return;
+            }
+
+            const credentials = VALID_CREDENTIALS[username];
+            if (!credentials || credentials.password !== password) {
+                showAlert('Identifiants incorrects', 'error');
+                return;
+            }
+
+            currentUser = username;
+            currentRole = credentials.role;
+
+            // Initialiser les stats utilisateur
+            if (!userStats[username]) {
+                userStats[username] = {
+                    dailySales: 0,
+                    monthlySales: 0,
+                    totalSales: 0,
+                    transactionsCount: 0,
+                    dailyTransactions: 0,
+                    monthlyTransactions: 0,
+                    lastLogin: new Date().toISOString()
+                };
+            }
+
+            // Mettre à jour l'interface
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+            document.getElementById('currentUser').textContent = username;
+            
+            const roleBadge = document.getElementById('userRoleBadge');
+            roleBadge.textContent = currentRole === 'admin' ? 'ADMIN' : 'CAISSIER';
+            roleBadge.className = `role-badge ${currentRole === 'admin' ? 'role-admin' : 'role-user'}`;
+
+            // Charger les données
+            loadDashboard();
+            loadQuickProducts();
+            updateTicketNumber();
+            updateTicketDate();
+            
+            showAlert(`Bienvenue ${username} !`, 'success');
+        }
+
+        function logout() {
+            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+                currentUser = null;
+                currentRole = null;
+                document.getElementById('appContainer').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'block';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        // ==================== NAVIGATION ====================
+        function showSection(sectionId) {
+            // Masquer toutes les sections
+            ['dashboard', 'caisse', 'articles', 'stock', 'statistiques', 'rapports'].forEach(id => {
+                const el = document.getElementById(id + 'Section');
+                if (el) el.style.display = 'none';
+            });
+            
+            // Désactiver tous les onglets
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Afficher la section sélectionnée
+            const sectionEl = document.getElementById(sectionId + 'Section');
+            if (sectionEl) {
+                sectionEl.style.display = 'block';
+                document.getElementById('sectionTitle').textContent = 
+                    sectionId === 'dashboard' ? 'Tableau de bord' :
+                    sectionId === 'caisse' ? 'Caisse enregistreuse' :
+                    sectionId === 'articles' ? 'Gestion des articles' :
+                    sectionId === 'stock' ? 'Stock en temps réel' :
+                    sectionId === 'statistiques' ? 'Statistiques de ventes' :
+                    sectionId === 'rapports' ? 'Rapports des ventes' : sectionId;
+                
+                // Activer l'onglet correspondant
+                document.querySelector(`.nav-item[onclick*="${sectionId}"]`).classList.add('active');
+                
+                // Charger les données spécifiques
+                switch(sectionId) {
+                    case 'dashboard':
+                        loadDashboard();
+                        break;
+                    case 'caisse':
+                        loadQuickProducts();
+                        updateTicket();
+                        break;
+                    case 'articles':
+                        loadProducts();
+                        break;
+                    case 'stock':
+                        loadStock();
+                        break;
+                    case 'statistiques':
+                        loadStatistics();
+                        break;
+                    case 'rapports':
+                        loadReports();
+                        break;
+                }
+            }
+        }
+
+        function showStatTab(tabId) {
+            console.log('Chargement de l\'onglet:', tabId);
+            
+            // Masquer tous les contenus d'onglets
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Désactiver tous les onglets
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Activer l'onglet sélectionné
+            const tabContent = document.getElementById(tabId + 'Tab');
+            if (tabContent) {
+                tabContent.classList.add('active');
+                document.querySelector(`.tab[onclick*="${tabId}"]`).classList.add('active');
+                
+                // Charger les données spécifiques
+                switch(tabId) {
+                    case 'general':
+                        loadGeneralStats();
+                        break;
+                    case 'products':
+                        loadProductDetails();
+                        break;
+                    case 'users':
+                        loadUsersRanking();
+                        break;
+                    case 'periodes':
+                        loadPeriodStats();
+                        break;
+                    case 'topProducts':
+                        loadTopProductsStats();
+                        break;
+                }
+            }
+        }
+
+        // ==================== DASHBOARD ====================
+        function loadDashboard() {
+            const today = new Date().toDateString();
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            // Calculer les statistiques
+            const todayTransactions = transactions.filter(t => 
+                new Date(t.date).toDateString() === today
+            );
+            
+            const monthlyTransactions = transactions.filter(t => {
+                const d = new Date(t.date);
+                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+            });
+            
+            const todaySales = todayTransactions.reduce((sum, t) => sum + t.total, 0);
+            const monthlySales = monthlyTransactions.reduce((sum, t) => sum + t.total, 0);
+            
+            // Statistiques utilisateur
+            const userTodayTransactions = todayTransactions.filter(t => t.user === currentUser);
+            const userTodaySales = userTodayTransactions.reduce((sum, t) => sum + t.total, 0);
+            
+            // Mettre à jour les cartes
+            document.getElementById('salesToday').textContent = todaySales.toLocaleString() + ' FCFA';
+            document.getElementById('salesTodayCount').textContent = todayTransactions.length + ' transactions';
+            
+            document.getElementById('monthlySales').textContent = monthlySales.toLocaleString() + ' FCFA';
+            document.getElementById('monthlySalesCount').textContent = monthlyTransactions.length + ' transactions';
+            
+            document.getElementById('userPerformance').textContent = userTodaySales.toLocaleString() + ' FCFA';
+            document.getElementById('userTransactions').textContent = userTodayTransactions.length + ' transactions';
+            
+            // Produit le plus vendu aujourd'hui
+            let topProduct = null;
+            let maxQty = 0;
+            const productSales = {};
+            
+            todayTransactions.forEach(t => {
+                t.items.forEach(item => {
+                    productSales[item.code] = (productSales[item.code] || 0) + item.quantity;
+                    if (productSales[item.code] > maxQty) {
+                        maxQty = productSales[item.code];
+                        topProduct = products.find(p => p.code === item.code)?.name || item.name;
+                    }
+                });
+            });
+            
+            if (topProduct) {
+                document.getElementById('topProductToday').textContent = topProduct;
+                document.getElementById('topProductQuantity').textContent = maxQty + ' unités';
+            } else {
+                document.getElementById('topProductToday').textContent = '-';
+                document.getElementById('topProductQuantity').textContent = '0 unités';
+            }
+            
+            // Charger les statistiques personnelles
+            loadPersonalStats();
+            
+            // Charger les transactions récentes
+            loadRecentTransactions();
+        }
+
+        function loadPersonalStats() {
+            const tbody = document.getElementById('personalStats');
+            if (!tbody) return;
+            
+            const periods = [
+                { label: "Aujourd'hui", days: 0 },
+                { label: "Cette semaine", days: 7 },
+                { label: "Ce mois", days: 30 },
+                { label: "Cette année", days: 365 },
+                { label: "Total", days: Infinity }
+            ];
+            
+            tbody.innerHTML = '';
+            
+            periods.forEach(period => {
+                let userTrans = transactions.filter(t => t.user === currentUser);
+                
+                if (period.days === 0) {
+                    const today = new Date().toDateString();
+                    userTrans = userTrans.filter(t => new Date(t.date).toDateString() === today);
+                } else if (period.days !== Infinity) {
+                    const cutoff = new Date();
+                    cutoff.setDate(cutoff.getDate() - period.days);
+                    userTrans = userTrans.filter(t => new Date(t.date) >= cutoff);
+                }
+                
+                const totalSales = userTrans.reduce((s, t) => s + t.total, 0);
+                const totalItems = userTrans.reduce((s, t) => 
+                    s + t.items.reduce((si, i) => si + i.quantity, 0), 0);
+                const avgTicket = userTrans.length > 0 ? totalSales / userTrans.length : 0;
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${period.label}</td>
+                    <td>${userTrans.length}</td>
+                    <td>${totalItems}</td>
+                    <td>${totalSales.toLocaleString()} FCFA</td>
+                    <td>${Math.round(avgTicket).toLocaleString()} FCFA</td>
+                `;
+            });
+        }
+
+        function loadRecentTransactions() {
+            const tbody = document.querySelector('#recentTransactions tbody');
+            if (!tbody) return;
+            
+            const recent = transactions.slice(-10).reverse();
+            
+            if (recent.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #7f8c8d;">Aucune transaction récente</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            recent.forEach(trans => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${trans.ticketNumber}</td>
+                    <td>${new Date(trans.date).toLocaleDateString('fr-FR')}</td>
+                    <td>${trans.total.toLocaleString()} FCFA</td>
+                    <td>${getPaymentMethodLabel(trans.paymentMethod)}</td>
+                    <td>
+                        <button class="btn btn-info" onclick="resendToWhatsApp(${trans.id})" style="padding: 6px 12px; font-size: 12px;">
+                            📱
+                        </button>
+                    </td>
+                `;
+            });
+        }
+
+        // ==================== STATISTIQUES ====================
+        function loadStatistics() {
+            console.log('Chargement des statistiques complètes');
+            // Charger d'abord l'onglet général
+            loadGeneralStats();
+        }
+
+        function loadGeneralStats() {
+            console.log('Chargement des statistiques générales');
+            
+            // Mettre à jour le label du mois
+            const currentMonth = new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+            document.getElementById('currentMonthLabel').textContent = currentMonth;
+            
+            // Calculer les statistiques du mois
+            const currentMonthIndex = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            const monthTransactions = transactions.filter(t => {
+                const d = new Date(t.date);
+                return d.getMonth() === currentMonthIndex && d.getFullYear() === currentYear;
+            });
+            
+            const totalSalesMonth = monthTransactions.reduce((sum, t) => sum + t.total, 0);
+            const totalItemsMonth = monthTransactions.reduce((sum, t) => 
+                sum + t.items.reduce((si, i) => si + i.quantity, 0), 0);
+            const avgTicketMonth = monthTransactions.length > 0 ? totalSalesMonth / monthTransactions.length : 0;
+            
+            // Mettre à jour les indicateurs
+            document.getElementById('totalSalesMonth').textContent = totalSalesMonth.toLocaleString() + ' FCFA';
+            document.getElementById('totalTransactionsMonth').textContent = monthTransactions.length;
+            document.getElementById('totalItemsMonth').textContent = totalItemsMonth;
+            document.getElementById('avgTicketMonth').textContent = Math.round(avgTicketMonth).toLocaleString() + ' FCFA';
+            
+            // Charger le graphique des ventes quotidiennes
+            loadDailySalesChart();
+            
+            // Charger la performance des utilisateurs
+            loadUsersPerformance();
+        }
+
+        function loadDailySalesChart() {
+            const ctx = document.getElementById('dailySalesChart');
+            if (!ctx) return;
+            
+            // Calculer les ventes des 7 derniers jours
+            const dailySales = [];
+            const labels = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('fr-FR', { weekday: 'short' }));
+                
+                const daySales = transactions.filter(t => {
+                    const d = new Date(t.date);
+                    return d.toDateString() === date.toDateString();
+                }).reduce((sum, t) => sum + t.total, 0);
+                
+                dailySales.push(daySales);
+            }
+            
+            // Détruire le précédent graphique s'il existe
+            if (charts.dailySales) {
+                charts.dailySales.destroy();
+            }
+            
+            // Créer le nouveau graphique
+            charts.dailySales = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ventes (FCFA)',
+                        data: dailySales,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toLocaleString() + ' FCFA';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => value.toLocaleString() + ' FCFA'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadUsersPerformance() {
+            const period = document.getElementById('performancePeriod')?.value || 'month';
+            const tbody = document.getElementById('usersPerformanceTable');
+            if (!tbody) return;
+            
+            console.log('Chargement performance utilisateurs, période:', period);
+            
+            // Filtrer les transactions par période
+            let filteredTransactions = filterTransactionsByPeriod(period);
+            
+            // Calculer les performances par utilisateur
+            const userPerformance = {};
+            let totalRevenue = 0;
+            
+            filteredTransactions.forEach(transaction => {
+                if (!userPerformance[transaction.user]) {
+                    userPerformance[transaction.user] = {
+                        transactions: 0,
+                        revenue: 0
+                    };
+                }
+                userPerformance[transaction.user].transactions++;
+                userPerformance[transaction.user].revenue += transaction.total;
+                totalRevenue += transaction.total;
+            });
+            
+            // Convertir en tableau et trier
+            const sortedUsers = Object.entries(userPerformance)
+                .map(([user, data]) => ({ user, ...data }))
+                .sort((a, b) => b.revenue - a.revenue);
+            
+            tbody.innerHTML = '';
+            
+            if (sortedUsers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Aucune donnée pour cette période</td></tr>`;
+                return;
+            }
+            
+            sortedUsers.forEach(data => {
+                const avgTicket = data.transactions > 0 ? data.revenue / data.transactions : 0;
+                const percentage = totalRevenue > 0 ? (data.revenue / totalRevenue * 100).toFixed(1) : 0;
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${data.user}</td>
+                    <td>${data.transactions}</td>
+                    <td>${data.revenue.toLocaleString()} FCFA</td>
+                    <td>${Math.round(avgTicket).toLocaleString()} FCFA</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 60px; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden;">
+                                <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #3498db, #2980b9);"></div>
+                            </div>
+                            <span>${percentage}%</span>
+                        </div>
+                    </td>
+                `;
+            });
+        }
+
+        function loadProductDetails() {
+            const period = document.getElementById('productStatPeriod').value || 'month';
+            const tbody = document.getElementById('productDetailsTable');
+            const chartCanvas = document.getElementById('productSalesChart');
+            
+            if (!tbody || !chartCanvas) return;
+            
+            console.log('Chargement détails produits, période:', period);
+            
+            // Filtrer les transactions
+            let filteredTransactions = filterTransactionsByPeriod(period);
+            
+            // Mettre à jour le label de période
+            const periodLabels = {
+                'today': 'Aujourd\'hui',
+                'week': 'Cette semaine',
+                'month': 'Ce mois',
+                'year': 'Cette année',
+                'all': 'Toutes périodes'
+            };
+            document.getElementById('productPeriodLabel').textContent = periodLabels[period] || period;
+            
+            // Calculer les ventes par produit
+            const productStats = {};
+            let totalRevenue = 0;
+            let totalQuantity = 0;
+            
+            filteredTransactions.forEach(transaction => {
+                transaction.items.forEach(item => {
+                    if (!productStats[item.code]) {
+                        const product = products.find(p => p.code === item.code);
+                        productStats[item.code] = {
+                            name: product ? product.name : item.name,
+                            quantity: 0,
+                            revenue: 0
+                        };
+                    }
+                    productStats[item.code].quantity += item.quantity;
+                    productStats[item.code].revenue += item.total;
+                    totalRevenue += item.total;
+                    totalQuantity += item.quantity;
+                });
+            });
+            
+            // Convertir en tableau et trier
+            const sortedProducts = Object.entries(productStats)
+                .map(([code, data]) => ({ code, ...data }))
+                .sort((a, b) => b.revenue - a.revenue);
+            
+            // Mettre à jour le tableau
+            tbody.innerHTML = '';
+            
+            if (sortedProducts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Aucune vente pour cette période</td></tr>`;
+            } else {
+                sortedProducts.forEach((product, index) => {
+                    const percentage = totalRevenue > 0 ? (product.revenue / totalRevenue * 100).toFixed(1) : 0;
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${product.name}</td>
+                        <td>${product.quantity}</td>
+                        <td>${product.revenue.toLocaleString()} FCFA</td>
+                        <td>${percentage}%</td>
+                        <td>
+                            <div style="width: 80px; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden;">
+                                <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #2ecc71, #27ae60);"></div>
+                            </div>
+                        </td>
+                    `;
+                });
+            }
+            
+            // Mettre à jour le graphique
+            updateProductSalesChart(sortedProducts.slice(0, 10), chartCanvas);
+        }
+
+        function updateProductSalesChart(productsData, canvas) {
+            // Préparer les données pour le graphique
+            const labels = productsData.map(p => p.name.length > 15 ? p.name.substring(0, 15) + '...' : p.name);
+            const revenues = productsData.map(p => p.revenue);
+            const quantities = productsData.map(p => p.quantity);
+            
+            // Détruire le précédent graphique s'il existe
+            if (charts.productSales) {
+                charts.productSales.destroy();
+            }
+            
+            // Créer le nouveau graphique
+            charts.productSales = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'CA (FCFA)',
+                            data: revenues,
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Quantité',
+                            data: quantities,
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y1',
+                            type: 'line'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'CA (FCFA)'
+                            },
+                            ticks: {
+                                callback: value => value.toLocaleString() + ' FCFA'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Quantité'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function refreshProductStats() {
+            loadProductDetails();
+            showAlert('Statistiques produits actualisées', 'success');
+        }
+
+        function loadUsersRanking() {
+            const period = document.getElementById('userStatPeriod')?.value || 'month';
+            const tbody = document.getElementById('usersRankingTable');
+            const chartCanvas = document.getElementById('userDistributionChart');
+            
+            if (!tbody || !chartCanvas) return;
+            
+            console.log('Chargement classement utilisateurs, période:', period);
+            
+            // Filtrer les transactions
+            let filteredTransactions = filterTransactionsByPeriod(period);
+            
+            // Calculer les statistiques par utilisateur
+            const userStats = {};
+            let totalRevenue = 0;
+            
+            filteredTransactions.forEach(transaction => {
+                if (!userStats[transaction.user]) {
+                    userStats[transaction.user] = {
+                        transactions: 0,
+                        revenue: 0
+                    };
+                }
+                userStats[transaction.user].transactions++;
+                userStats[transaction.user].revenue += transaction.total;
+                totalRevenue += transaction.total;
+            });
+            
+            // Convertir en tableau et trier
+            const sortedUsers = Object.entries(userStats)
+                .map(([user, data]) => ({ user, ...data }))
+                .sort((a, b) => b.revenue - a.revenue);
+            
+            // Mettre à jour le tableau
+            tbody.innerHTML = '';
+            
+            if (sortedUsers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Aucune donnée pour cette période</td></tr>`;
+            } else {
+                sortedUsers.forEach((data, index) => {
+                    const row = tbody.insertRow();
+                    const rankEmoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : (index + 1) + '.';
+                    
+                    row.innerHTML = `
+                        <td>${rankEmoji}</td>
+                        <td>${data.user}</td>
+                        <td>${data.revenue.toLocaleString()} FCFA</td>
+                        <td>${data.transactions}</td>
+                        <td>
+                            <div style="width: 60px; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden;">
+                                <div style="width: ${totalRevenue > 0 ? (data.revenue / totalRevenue * 100) : 0}%; height: 100%; background: linear-gradient(90deg, #f39c12, #d68910);"></div>
+                            </div>
+                        </td>
+                    `;
+                });
+            }
+            
+            // Mettre à jour le meilleur performeur
+            updateBestPerformer(sortedUsers[0]);
+            
+            // Mettre à jour le graphique de distribution
+            updateUserDistributionChart(sortedUsers, chartCanvas);
+        }
+
+        function updateBestPerformer(bestUser) {
+            if (!bestUser) {
+                document.getElementById('bestPerformerName').textContent = '-';
+                document.getElementById('bestPerformerAmount').textContent = '0 FCFA';
+                document.getElementById('bestPerformerDetails').textContent = '0 transactions';
+                return;
+            }
+            
+            document.getElementById('bestPerformerName').textContent = bestUser.user;
+            document.getElementById('bestPerformerAmount').textContent = bestUser.revenue.toLocaleString() + ' FCFA';
+            document.getElementById('bestPerformerDetails').textContent = `${bestUser.transactions} transactions | Panier moyen: ${Math.round(bestUser.revenue / bestUser.transactions).toLocaleString()} FCFA`;
+        }
+
+        function updateUserDistributionChart(usersData, canvas) {
+            // Préparer les données pour le graphique
+            const labels = usersData.map(u => u.user);
+            const revenues = usersData.map(u => u.revenue);
+            
+            // Couleurs pour le graphique
+            const backgroundColors = [
+                'rgba(52, 152, 219, 0.7)',
+                'rgba(46, 204, 113, 0.7)',
+                'rgba(155, 89, 182, 0.7)',
+                'rgba(241, 196, 15, 0.7)',
+                'rgba(230, 126, 34, 0.7)',
+                'rgba(231, 76, 60, 0.7)',
+                'rgba(149, 165, 166, 0.7)'
+            ];
+            
+            // Détruire le précédent graphique s'il existe
+            if (charts.userDistribution) {
+                charts.userDistribution.destroy();
+            }
+            
+            // Créer le nouveau graphique
+            charts.userDistribution = new Chart(canvas, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: revenues,
+                        backgroundColor: backgroundColors.slice(0, usersData.length),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const total = revenues.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? (value / total * 100).toFixed(1) : 0;
+                                    return `${context.label}: ${value.toLocaleString()} FCFA (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadPeriodStats() {
+            const yearSelect = document.getElementById('periodYearSelect');
+            const periodType = document.getElementById('periodTypeSelect').value;
+            const chartCanvas = document.getElementById('periodSalesChart');
+            const tbody = document.getElementById('periodDetailsTable');
+            
+            if (!yearSelect || !chartCanvas || !tbody) return;
+            
+            console.log('Chargement statistiques par période, type:', periodType);
+            
+            // Remplir les années disponibles
+            const years = new Set();
+            transactions.forEach(t => {
+                const year = new Date(t.date).getFullYear();
+                years.add(year);
+            });
+            
+            if (years.size === 0) {
+                years.add(new Date().getFullYear());
+            }
+            
+            const sortedYears = Array.from(years).sort((a, b) => b - a);
+            
+            // Mettre à jour le select si nécessaire
+            if (yearSelect.options.length === 0) {
+                sortedYears.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelect.appendChild(option);
+                });
+                if (sortedYears.length > 0) {
+                    yearSelect.value = sortedYears[0];
+                }
+            }
+            
+            const selectedYear = parseInt(yearSelect.value) || new Date().getFullYear();
+            
+            // Calculer les données selon le type de période
+            let periodData = [];
+            let periodLabels = [];
+            
+            if (periodType === 'monthly') {
+                document.getElementById('periodChartTitle').textContent = `📅 Ventes Mensuelles ${selectedYear}`;
+                periodData = Array(12).fill(0);
+                periodLabels = [
+                    'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
+                    'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'
+                ];
+                
+                transactions.forEach(t => {
+                    const d = new Date(t.date);
+                    if (d.getFullYear() === selectedYear) {
+                        periodData[d.getMonth()] += t.total;
+                    }
+                });
+            } else if (periodType === 'quarterly') {
+                document.getElementById('periodChartTitle').textContent = `📅 Ventes Trimestrielles ${selectedYear}`;
+                periodData = Array(4).fill(0);
+                periodLabels = ['T1', 'T2', 'T3', 'T4'];
+                
+                transactions.forEach(t => {
+                    const d = new Date(t.date);
+                    if (d.getFullYear() === selectedYear) {
+                        const quarter = Math.floor(d.getMonth() / 3);
+                        periodData[quarter] += t.total;
+                    }
+                });
+            } else if (periodType === 'yearly') {
+                document.getElementById('periodChartTitle').textContent = '📅 Ventes Annuelles';
+                
+                // Regrouper par année
+                const yearlyData = {};
+                transactions.forEach(t => {
+                    const year = new Date(t.date).getFullYear();
+                    yearlyData[year] = (yearlyData[year] || 0) + t.total;
+                });
+                
+                const sortedYearsData = Object.keys(yearlyData).sort();
+                periodLabels = sortedYearsData;
+                periodData = sortedYearsData.map(year => yearlyData[year]);
+            }
+            
+            // Mettre à jour le graphique
+            updatePeriodSalesChart(periodLabels, periodData, chartCanvas);
+            
+            // Mettre à jour le tableau des détails
+            updatePeriodDetailsTable(periodLabels, periodData, tbody, periodType);
+        }
+
+        function updatePeriodSalesChart(labels, data, canvas) {
+            // Détruire le précédent graphique s'il existe
+            if (charts.periodSales) {
+                charts.periodSales.destroy();
+            }
+            
+            // Créer le nouveau graphique
+            charts.periodSales = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'CA (FCFA)',
+                        data: data,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toLocaleString() + ' FCFA';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => value.toLocaleString() + ' FCFA'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePeriodDetailsTable(labels, data, tbody, periodType) {
+            tbody.innerHTML = '';
+            
+            if (data.length === 0 || data.every(d => d === 0)) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Aucune donnée disponible</td></tr>`;
+                return;
+            }
+            
+            let totalTransactions = 0;
+            let totalItems = 0;
+            const year = document.getElementById('periodYearSelect')?.value || new Date().getFullYear();
+            
+            labels.forEach((label, index) => {
+                // Calculer les transactions et articles pour cette période
+                let periodTransactions = 0;
+                let periodItems = 0;
+                
+                if (periodType === 'monthly') {
+                    const month = index;
+                    periodTransactions = transactions.filter(t => {
+                        const d = new Date(t.date);
+                        return d.getFullYear() == year && d.getMonth() === month;
+                    }).length;
+                    
+                    periodItems = transactions.filter(t => {
+                        const d = new Date(t.date);
+                        return d.getFullYear() == year && d.getMonth() === month;
+                    }).reduce((sum, t) => sum + t.items.reduce((si, i) => si + i.quantity, 0), 0);
+                }
+                
+                totalTransactions += periodTransactions;
+                totalItems += periodItems;
+                
+                // Calculer la croissance
+                let growth = '';
+                if (index > 0 && data[index - 1] > 0) {
+                    const growthPercent = ((data[index] - data[index - 1]) / data[index - 1] * 100).toFixed(1);
+                    growth = `<span style="color: ${growthPercent >= 0 ? '#2ecc71' : '#e74c3c'}">
+                        ${growthPercent >= 0 ? '↗' : '↘'} ${Math.abs(growthPercent)}%
+                    </span>`;
+                }
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${label}</td>
+                    <td>${data[index].toLocaleString()} FCFA</td>
+                    <td>${periodTransactions}</td>
+                    <td>${periodItems}</td>
+                    <td>${growth}</td>
+                `;
+            });
+            
+            // Ajouter la ligne des totaux
+            const totalRow = tbody.insertRow();
+            totalRow.style.fontWeight = 'bold';
+            totalRow.style.backgroundColor = '#f8f9fa';
+            totalRow.innerHTML = `
+                <td>TOTAL</td>
+                <td>${data.reduce((a, b) => a + b, 0).toLocaleString()} FCFA</td>
+                <td>${totalTransactions}</td>
+                <td>${totalItems}</td>
+                <td></td>
+            `;
+        }
+
+        function loadTopProductsStats() {
+            const period = document.getElementById('topProductsPeriod').value || 'month';
+            const limit = parseInt(document.getElementById('topProductsLimit').value) || 5;
+            const tbody = document.getElementById('topProductsTable');
+            const pieCanvas = document.getElementById('topProductsChart');
+            const trendCanvas = document.getElementById('productsTrendChart');
+            
+            if (!tbody || !pieCanvas || !trendCanvas) return;
+            
+            console.log('Chargement top produits, période:', period, 'limit:', limit);
+            
+            // Filtrer les transactions
+            let filteredTransactions = filterTransactionsByPeriod(period);
+            
+            // Calculer les ventes par produit
+            const productStats = {};
+            let totalRevenue = 0;
+            
+            filteredTransactions.forEach(transaction => {
+                transaction.items.forEach(item => {
+                    if (!productStats[item.code]) {
+                        const product = products.find(p => p.code === item.code);
+                        productStats[item.code] = {
+                            name: product ? product.name : item.name,
+                            quantity: 0,
+                            revenue: 0
+                        };
+                    }
+                    productStats[item.code].quantity += item.quantity;
+                    productStats[item.code].revenue += item.total;
+                    totalRevenue += item.total;
+                });
+            });
+            
+            // Convertir en tableau et trier
+            const topProducts = Object.entries(productStats)
+                .map(([code, data]) => ({ code, ...data }))
+                .sort((a, b) => b.revenue - a.revenue)
+                .slice(0, limit);
+            
+            // Mettre à jour le tableau
+            tbody.innerHTML = '';
+            
+            if (topProducts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">Aucune vente pour cette période</td></tr>`;
+            } else {
+                topProducts.forEach((product, index) => {
+                    const percentage = totalRevenue > 0 ? (product.revenue / totalRevenue * 100).toFixed(1) : 0;
+                    const row = tbody.insertRow();
+                    if (index < 3) row.className = 'best-seller';
+                    
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${product.name}</td>
+                        <td>${product.quantity}</td>
+                        <td>${product.revenue.toLocaleString()} FCFA</td>
+                        <td>${percentage}%</td>
+                    `;
+                });
+            }
+            
+            // Mettre à jour les graphiques
+            updateTopProductsChart(topProducts, pieCanvas);
+            updateProductsTrendChart(topProducts.slice(0, 5), trendCanvas);
+        }
+
+        function updateTopProductsChart(productsData, canvas) {
+            // Préparer les données pour le graphique
+            const labels = productsData.map(p => p.name.length > 15 ? p.name.substring(0, 15) + '...' : p.name);
+            const revenues = productsData.map(p => p.revenue);
+            
+            // Couleurs pour le graphique
+            const backgroundColors = [
+                'rgba(52, 152, 219, 0.7)',
+                'rgba(46, 204, 113, 0.7)',
+                'rgba(155, 89, 182, 0.7)',
+                'rgba(241, 196, 15, 0.7)',
+                'rgba(230, 126, 34, 0.7)',
+                'rgba(231, 76, 60, 0.7)',
+                'rgba(149, 165, 166, 0.7)',
+                'rgba(41, 128, 185, 0.7)',
+                'rgba(39, 174, 96, 0.7)',
+                'rgba(142, 68, 173, 0.7)'
+            ];
+            
+            // Détruire le précédent graphique s'il existe
+            if (charts.topProducts) {
+                charts.topProducts.destroy();
+            }
+            
+            // Créer le nouveau graphique
+            charts.topProducts = new Chart(canvas, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: revenues,
+                        backgroundColor: backgroundColors.slice(0, productsData.length),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const total = revenues.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? (value / total * 100).toFixed(1) : 0;
+                                    return `${context.label}: ${value.toLocaleString()} FCFA (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateProductsTrendChart(topProducts, canvas) {
+            // Analyser l'évolution sur les 6 derniers mois
+            const months = [];
+            const datasets = [];
+            
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date();
+                date.setMonth(date.getMonth() - i);
+                months.push(date.toLocaleDateString('fr-FR', { month: 'short' }));
+            }
+            
+            // Pour chaque produit, calculer les ventes par mois
+            topProducts.forEach((product, index) => {
+                const productData = [];
+                
+                for (let i = 5; i >= 0; i--) {
+                    const monthStart = new Date();
+                    monthStart.setMonth(monthStart.getMonth() - i);
+                    monthStart.setDate(1);
+                    
+                    const monthEnd = new Date(monthStart);
+                    monthEnd.setMonth(monthEnd.getMonth() + 1);
+                    
+                    const monthSales = transactions.filter(t => {
+                        const d = new Date(t.date);
+                        return d >= monthStart && d < monthEnd;
+                    }).reduce((total, t) => {
+                        const item = t.items.find(i => i.code === product.code);
+                        return total + (item ? item.quantity : 0);
+                    }, 0);
+                    
+                    productData.push(monthSales);
+                }
+                
+                const colors = [
+                    'rgba(52, 152, 219, 0.7)',
+                    'rgba(46, 204, 113, 0.7)',
+                    'rgba(155, 89, 182, 0.7)',
+                    'rgba(241, 196, 15, 0.7)',
+                    'rgba(230, 126, 34, 0.7)'
+                ];
+                
+                datasets.push({
+                    label: product.name.length > 15 ? product.name.substring(0, 15) + '...' : product.name,
+                    data: productData,
+                    backgroundColor: colors[index] || colors[0],
+                    borderColor: colors[index] || colors[0],
+                    borderWidth: 2,
+                    fill: false
+                });
+            });
+            
+            // Détruire le précédent graphique s'il existe
+            if (charts.productsTrend) {
+                charts.productsTrend.destroy();
+            }
+            
+            // Créer le nouveau graphique
+            charts.productsTrend = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Évolution des produits stars (6 derniers mois)'
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Quantité vendue'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==================== CAISSE ENREGISTREUSE ====================
+        function updateTicketNumber() {
+            const counter = transactions.length + 1;
+            document.getElementById('ticketNumber').textContent = counter.toString().padStart(4, '0');
+        }
+
+        function updateTicketDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('ticketDate').textContent = now.toLocaleDateString('fr-FR', options);
+        }
+
+        function loadQuickProducts() {
+            const container = document.getElementById('quickProducts');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            products.forEach(product => {
+                const div = document.createElement('div');
+                div.className = 'product-card';
+                div.innerHTML = `
+                    <div style="font-weight: bold; color: #2c3e50; margin-bottom: 5px;">${product.code}</div>
+                    <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 10px;">${product.name}</div>
+                    <div style="color: #e74c3c; font-weight: bold; font-size: 16px;">${product.price.toLocaleString()} FCFA</div>
+                    <div style="font-size: 11px; color: ${product.stock <= 10 ? '#e74c3c' : '#2ecc71'}; margin-top: 5px;">
+                        Stock: ${product.stock}
+                    </div>
+                `;
+                div.onclick = () => addToTicket(product.code);
+                container.appendChild(div);
+            });
+        }
+
+        function addByBarcode() {
+            const input = document.getElementById('barcodeInput');
+            const code = input.value.trim();
+            
+            if (!code) {
+                showAlert('Veuillez entrer un code article', 'warning');
+                return;
+            }
+            
+            addToTicket(code);
+            input.value = '';
+            input.focus();
+        }
+
+        function addToTicket(productCode) {
+            const product = products.find(p => p.code === productCode);
+            if (!product) {
+                showAlert('Article non trouvé', 'error');
+                return;
+            }
+            
+            if (product.stock <= 0) {
+                showAlert('Stock épuisé pour cet article', 'error');
+                return;
+            }
+            
+            const existingIndex = currentTicket.findIndex(item => item.code === productCode);
+            if (existingIndex !== -1) {
+                currentTicket[existingIndex].quantity++;
+            } else {
+                currentTicket.push({
+                    code: product.code,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1,
+                    total: product.price
+                });
+            }
+            
+            updateTicket();
+        }
+
+        function updateTicket() {
+            // Mettre à jour le tableau
+            const tbody = document.getElementById('ticketItems');
+            tbody.innerHTML = '';
+            
+            if (currentTicket.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">Aucun article ajouté</td></tr>`;
+            } else {
+                currentTicket.forEach((item, index) => {
+                    item.total = item.price * item.quantity;
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${item.code}</td>
+                        <td>${item.name}</td>
+                        <td>${item.price.toLocaleString()} FCFA</td>
+                        <td>
+                            <input type="number" value="${item.quantity}" min="1" 
+                                   style="width: 70px; padding: 5px; border: 2px solid #ddd; border-radius: 4px;"
+                                   onchange="updateQuantity(${index}, this.value)">
+                        </td>
+                        <td>${item.total.toLocaleString()} FCFA</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="removeFromTicket(${index})" style="padding: 5px 10px; font-size: 12px;">
+                                ❌
+                            </button>
+                        </td>
+                    `;
+                });
+            }
+            
+            // Mettre à jour l'aperçu
+            const preview = document.getElementById('ticketPreview');
+            preview.innerHTML = '';
+            
+            if (currentTicket.length === 0) {
+                preview.innerHTML = '<div style="text-align: center; padding: 40px; color: #7f8c8d;">Ticket vide</div>';
+            } else {
+                let subtotal = 0;
+                currentTicket.forEach(item => {
+                    subtotal += item.total;
+                    const div = document.createElement('div');
+                    div.className = 'ticket-item';
+                    div.innerHTML = `
+                        <div>${item.name} x${item.quantity}</div>
+                        <div>${item.total.toLocaleString()} FCFA</div>
+                    `;
+                    preview.appendChild(div);
+                });
+            }
+            
+            // Calculer les totaux
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const subtotal = currentTicket.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = Math.max(0, subtotal - discount);
+            
+            document.getElementById('ticketTotal').textContent = subtotal.toLocaleString();
+            document.getElementById('ticketDiscount').textContent = discount.toLocaleString();
+            document.getElementById('ticketToPay').textContent = total.toLocaleString();
+            
+            // Activer/désactiver le bouton de finalisation
+            document.getElementById('finalizeBtn').disabled = currentTicket.length === 0;
+        }
+
+        function updateQuantity(index, newQuantity) {
+            const qty = parseInt(newQuantity);
+            if (qty > 0) {
+                currentTicket[index].quantity = qty;
+                updateTicket();
+            }
+        }
+
+        function removeFromTicket(index) {
+            currentTicket.splice(index, 1);
+            updateTicket();
+        }
+
+        function clearTicket() {
+            if (currentTicket.length === 0) {
+                showAlert('Le ticket est déjà vide', 'warning');
+                return;
+            }
+            
+            if (confirm('Voulez-vous vraiment annuler ce ticket ?')) {
+                currentTicket = [];
+                updateTicket();
+                document.getElementById('discount').value = 0;
+                updateTicketNumber();
+                showAlert('Ticket annulé', 'success');
+            }
+        }
+
+        function processPayment() {
+            if (currentTicket.length === 0) {
+                showAlert('Veuillez ajouter des articles au ticket', 'error');
+                return;
+            }
+            
+            const total = parseFloat(document.getElementById('ticketToPay').textContent.replace(/\s/g, '')) || 0;
+            if (total <= 0) {
+                showAlert('Montant total invalide', 'error');
+                return;
+            }
+            
+            document.getElementById('modalTotal').textContent = total.toLocaleString();
+            document.getElementById('paymentModal').style.display = 'flex';
+            document.getElementById('amountPaid').value = total;
+            document.getElementById('amountPaid').focus();
+            calculateChange();
+        }
+
+        function calculateChange() {
+            const total = parseFloat(document.getElementById('ticketToPay').textContent.replace(/\s/g, '')) || 0;
+            const paid = parseFloat(document.getElementById('amountPaid').value) || 0;
+            const change = paid - total;
+            
+            const changeEl = document.getElementById('changeAmount');
+            changeEl.textContent = change >= 0 ? change.toLocaleString() : '0';
+            changeEl.style.color = change >= 0 ? '#27ae60' : '#e74c3c';
+        }
+
+        function confirmPayment() {
+            const total = parseFloat(document.getElementById('ticketToPay').textContent.replace(/\s/g, '')) || 0;
+            const paid = parseFloat(document.getElementById('amountPaid').value) || 0;
+            
+            if (paid < total) {
+                showAlert('Montant insuffisant', 'error');
+                return;
+            }
+            
+            // Créer la transaction
+            const transaction = {
+                id: Date.now(),
+                ticketNumber: document.getElementById('ticketNumber').textContent,
+                date: new Date().toISOString(),
+                items: [...currentTicket],
+                subtotal: parseFloat(document.getElementById('ticketTotal').textContent.replace(/\s/g, '')) || 0,
+                discount: parseFloat(document.getElementById('discount').value) || 0,
+                total: total,
+                paymentMethod: document.getElementById('paymentMethod').value,
+                amountPaid: paid,
+                change: Math.max(0, paid - total),
+                user: currentUser
+            };
+            
+            // Enregistrer la transaction
+            transactions.push(transaction);
+            
+            // Mettre à jour les stocks
+            currentTicket.forEach(item => {
+                const product = products.find(p => p.code === item.code);
+                if (product) {
+                    product.stock = Math.max(0, product.stock - item.quantity);
+                    product.totalSold = (product.totalSold || 0) + item.quantity;
+                }
+            });
+            
+            // Mettre à jour les statistiques utilisateur
+            updateUserStats(transaction);
+            
+            // Sauvegarder
+            saveAllData();
+            
+            // Envoyer par WhatsApp
+            sendTicketToWhatsApp(transaction);
+            
+            // Fermer le modal
+            closeModal();
+            
+            // Imprimer
+            printTicket(transaction);
+            
+            // Réinitialiser
+            ticketCounter++;
+            currentTicket = [];
+            updateTicket();
+            updateTicketNumber();
+            updateTicketDate();
+            
+            // Recharger les données
+            loadDashboard();
+            loadQuickProducts();
+            loadProducts();
+            loadStock();
+            
+            showAlert('Paiement effectué avec succès !', 'success');
+        }
+
+        function updateUserStats(transaction) {
+            if (!userStats[currentUser]) {
+                userStats[currentUser] = {
+                    dailySales: 0,
+                    monthlySales: 0,
+                    totalSales: 0,
+                    transactionsCount: 0,
+                    dailyTransactions: 0,
+                    monthlyTransactions: 0
+                };
+            }
+            
+            userStats[currentUser].totalSales += transaction.total;
+            userStats[currentUser].transactionsCount++;
+            
+            const today = new Date().toDateString();
+            if (new Date(transaction.date).toDateString() === today) {
+                userStats[currentUser].dailySales += transaction.total;
+                userStats[currentUser].dailyTransactions++;
+            }
+            
+            const transDate = new Date(transaction.date);
+            const now = new Date();
+            if (transDate.getMonth() === now.getMonth() && transDate.getFullYear() === now.getFullYear()) {
+                userStats[currentUser].monthlySales += transaction.total;
+                userStats[currentUser].monthlyTransactions++;
+            }
+        }
+
+        function sendTicketToWhatsApp(transaction) {
+            const message = createWhatsAppMessage(transaction);
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function createWhatsAppMessage(transaction) {
+            let message = `*TICKET DE CAISSE #${transaction.ticketNumber}*\n`;
+            message += `📅 ${new Date(transaction.date).toLocaleString('fr-FR')}\n`;
+            message += `👤 ${transaction.user}\n\n`;
+            message += '*ARTICLES:*\n';
+            message += '─'.repeat(30) + '\n';
+            
+            transaction.items.forEach(item => {
+                message += `• ${item.name} x${item.quantity}\n`;
+                message += `  ${item.price.toLocaleString()} x ${item.quantity} = ${item.total.toLocaleString()} FCFA\n`;
+            });
+            
+            message += '─'.repeat(30) + '\n';
+            message += `Sous-total: ${transaction.subtotal.toLocaleString()} FCFA\n`;
+            message += `Remise: ${transaction.discount.toLocaleString()} FCFA\n`;
+            message += `*TOTAL: ${transaction.total.toLocaleString()} FCFA*\n\n`;
+            message += `💳 Paiement: ${getPaymentMethodLabel(transaction.paymentMethod)}\n`;
+            message += `💰 Payé: ${transaction.amountPaid.toLocaleString()} FCFA\n`;
+            message += `🔄 Rendu: ${transaction.change.toLocaleString()} FCFA\n\n`;
+            message += `*Merci de votre visite !*`;
+            
+            return message;
+        }
+
+        function resendToWhatsApp(transactionId) {
+            const transaction = transactions.find(t => t.id === transactionId);
+            if (transaction) {
+                sendTicketToWhatsApp(transaction);
+                showAlert('Ticket renvoyé par WhatsApp', 'success');
+            }
+        }
+
+        function printTicket(transaction) {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Ticket #${transaction.ticketNumber}</title>
+                        <style>
+                            body { font-family: 'Courier New', monospace; margin: 20px; }
+                            .ticket { max-width: 300px; margin: 0 auto; }
+                            .center { text-align: center; }
+                            .line { border-bottom: 1px dashed #000; margin: 10px 0; }
+                            .total { font-weight: bold; }
+                            @media print { body { font-size: 12px; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="ticket">
+                            <div class="center">
+                                <h3>CAISSE ENREGISTREUSE</h3>
+                                <p>Ticket #${transaction.ticketNumber}</p>
+                                <p>${new Date(transaction.date).toLocaleString('fr-FR')}</p>
+                                <p>Caissier: ${transaction.user}</p>
+                            </div>
+                            <div class="line"></div>
+                            ${transaction.items.map(item => `
+                                <div style="display: flex; justify-content: space-between;">
+                                    <div>${item.name} x${item.quantity}</div>
+                                    <div>${item.total.toLocaleString()} FCFA</div>
+                                </div>
+                            `).join('')}
+                            <div class="line"></div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>Sous-total:</div>
+                                <div>${transaction.subtotal.toLocaleString()} FCFA</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>Remise:</div>
+                                <div>${transaction.discount.toLocaleString()} FCFA</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;" class="total">
+                                <div>TOTAL:</div>
+                                <div>${transaction.total.toLocaleString()} FCFA</div>
+                            </div>
+                            <div class="line"></div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>Paiement:</div>
+                                <div>${getPaymentMethodLabel(transaction.paymentMethod)}</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>Montant payé:</div>
+                                <div>${transaction.amountPaid.toLocaleString()} FCFA</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>Monnaie rendue:</div>
+                                <div>${transaction.change.toLocaleString()} FCFA</div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="center">
+                                <p>Merci de votre visite !</p>
+                            </div>
+                        </div>
+                        <script>
+                            window.onload = function() {
+                                window.print();
+                                setTimeout(() => window.close(), 1000);
+                            }
+                        <\/script>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        function finalizeTicket() {
+            processPayment();
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        // ==================== GESTION DES ARTICLES ====================
+        function loadProducts() {
+            const tbody = document.querySelector('#articlesTable tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">Aucun article enregistré</td></tr>`;
+                return;
+            }
+            
+            products.forEach((product, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${product.code}</td>
+                    <td>${product.name}</td>
+                    <td>${product.price.toLocaleString()} FCFA</td>
+                    <td>${product.stock}</td>
+                    <td>${product.totalSold || 0}</td>
+                    <td>
+                        ${currentRole === 'admin' ? `
+                            <button class="btn btn-primary" onclick="editProduct(${index})" style="padding: 6px 12px; font-size: 12px; margin-right: 5px;">
+                                ✏️
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteProduct(${index})" style="padding: 6px 12px; font-size: 12px;">
+                                ❌
+                            </button>
+                        ` : '<span style="color: #7f8c8d;">Lecture seule</span>'}
+                    </td>
+                `;
+            });
+        }
+
+        function addNewArticle() {
+            if (currentRole !== 'admin') {
+                showAlert('Accès réservé à l\'administrateur', 'error');
+                return;
+            }
+            
+            const code = document.getElementById('newCode').value.trim();
+            const name = document.getElementById('newName').value.trim();
+            const price = parseFloat(document.getElementById('newPrice').value);
+            const stock = parseInt(document.getElementById('newStock').value);
+            
+            if (!code || !name || isNaN(price) || isNaN(stock)) {
+                showAlert('Veuillez remplir tous les champs correctement', 'error');
+                return;
+            }
+            
+            if (products.some(p => p.code === code)) {
+                showAlert('Un article avec ce code existe déjà', 'error');
+                return;
+            }
+            
+            products.push({
+                code,
+                name,
+                price,
+                stock,
+                totalSold: 0
+            });
+            
+            saveAllData();
+            
+            // Réinitialiser le formulaire
+            document.getElementById('newCode').value = '';
+            document.getElementById('newName').value = '';
+            document.getElementById('newPrice').value = '';
+            document.getElementById('newStock').value = '';
+            
+            loadProducts();
+            loadQuickProducts();
+            showAlert('Article ajouté avec succès', 'success');
+        }
+
+        function editProduct(index) {
+            if (currentRole !== 'admin') {
+                showAlert('Accès réservé à l\'administrateur', 'error');
+                return;
+            }
+            
+            const product = products[index];
+            document.getElementById('editCode').value = product.code;
+            document.getElementById('editName').value = product.name;
+            document.getElementById('editPrice').value = product.price;
+            document.getElementById('editStock').value = product.stock;
+            editingProductIndex = index;
+            document.getElementById('editProductModal').style.display = 'flex';
+        }
+
+        function saveProductEdit() {
+            if (editingProductIndex === -1) return;
+            
+            const name = document.getElementById('editName').value.trim();
+            const price = parseFloat(document.getElementById('editPrice').value);
+            const stock = parseInt(document.getElementById('editStock').value);
+            
+            if (!name || isNaN(price) || isNaN(stock)) {
+                showAlert('Veuillez remplir tous les champs correctement', 'error');
+                return;
+            }
+            
+            products[editingProductIndex].name = name;
+            products[editingProductIndex].price = price;
+            products[editingProductIndex].stock = stock;
+            
+            saveAllData();
+            closeEditModal();
+            loadProducts();
+            loadQuickProducts();
+            showAlert('Article modifié avec succès', 'success');
+        }
+
+        function deleteProduct(index) {
+            if (currentRole !== 'admin') {
+                showAlert('Accès réservé à l\'administrateur', 'error');
+                return;
+            }
+            
+            if (!confirm('Voulez-vous vraiment supprimer cet article ?')) {
+                return;
+            }
+            
+            const product = products[index];
+            if (product.totalSold > 0) {
+                showAlert('Impossible de supprimer un article déjà vendu', 'error');
+                return;
+            }
+            
+            products.splice(index, 1);
+            saveAllData();
+            loadProducts();
+            loadQuickProducts();
+            showAlert('Article supprimé avec succès', 'success');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editProductModal').style.display = 'none';
+            editingProductIndex = -1;
+        }
+
+        // ==================== GESTION DU STOCK ====================
+        function loadStock() {
+            const tbody = document.querySelector('#stockTable tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: #7f8c8d;">Aucun article en stock</td></tr>`;
+                return;
+            }
+            
+            // Calculer les ventes des 30 derniers jours
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            products.forEach((product, index) => {
+                const recentSales = transactions.reduce((total, trans) => {
+                    if (new Date(trans.date) >= thirtyDaysAgo) {
+                        const item = trans.items.find(i => i.code === product.code);
+                        if (item) total += item.quantity;
+                    }
+                    return total;
+                }, 0);
+                
+                const status = product.stock <= 10 ? 
+                    '<span class="badge badge-danger">CRITIQUE</span>' :
+                    product.stock <= 20 ? 
+                    '<span class="badge badge-warning">BAS</span>' :
+                    '<span class="badge badge-success">OK</span>';
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${product.code}</td>
+                    <td>${product.name}</td>
+                    <td>${product.stock}</td>
+                    <td>10</td>
+                    <td>${status}</td>
+                    <td>${recentSales}</td>
+                    <td>
+                        ${currentRole === 'admin' ? `
+                            <button class="btn btn-warning" onclick="adjustStock(${index})" style="padding: 6px 12px; font-size: 12px;">
+                                📊 Ajuster
+                            </button>
+                        ` : '<span style="color: #7f8c8d;">Lecture seule</span>'}
+                    </td>
+                `;
+            });
+        }
+
+        function adjustStock(index) {
+            const newStock = prompt('Nouveau stock pour ' + products[index].name + ' :', products[index].stock);
+            if (newStock !== null) {
+                const stock = parseInt(newStock);
+                if (!isNaN(stock) && stock >= 0) {
+                    products[index].stock = stock;
+                    saveAllData();
+                    loadStock();
+                    showAlert('Stock mis à jour', 'success');
+                } else {
+                    showAlert('Valeur invalide', 'error');
+                }
+            }
+        }
+
+        // ==================== RAPPORTS ====================
+        function loadReports() {
+            const tbody = document.querySelector('#salesReport tbody');
+            if (!tbody) return;
+            
+            const period = document.getElementById('reportPeriod').value;
+            let filtered = [...transactions];
+            
+            // Filtrer par période
+            const now = new Date();
+            switch(period) {
+                case 'today':
+                    const today = now.toDateString();
+                    filtered = transactions.filter(t => new Date(t.date).toDateString() === today);
+                    break;
+                case 'week':
+                    const weekStart = new Date(now);
+                    weekStart.setDate(now.getDate() - now.getDay());
+                    filtered = transactions.filter(t => new Date(t.date) >= weekStart);
+                    break;
+                case 'month':
+                    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                    filtered = transactions.filter(t => new Date(t.date) >= monthStart);
+                    break;
+                case 'year':
+                    const yearStart = new Date(now.getFullYear(), 0, 1);
+                    filtered = transactions.filter(t => new Date(t.date) >= yearStart);
+                    break;
+            }
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 40px; color: #7f8c8d;">Aucune transaction</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            filtered.reverse().forEach(trans => {
+                const itemCount = trans.items.reduce((sum, item) => sum + item.quantity, 0);
+                const itemNames = trans.items.map(item => `${item.name} (x${item.quantity})`).join(', ');
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${new Date(trans.date).toLocaleDateString('fr-FR')}</td>
+                    <td>${trans.ticketNumber}</td>
+                    <td>${trans.user}</td>
+                    <td>${itemNames}</td>
+                    <td>${itemCount}</td>
+                    <td>${trans.total.toLocaleString()} FCFA</td>
+                    <td>${getPaymentMethodLabel(trans.paymentMethod)}</td>
+                    <td>
+                        <button class="btn btn-info" onclick="resendToWhatsApp(${trans.id})" style="padding: 6px 12px; font-size: 12px;">
+                            📱
+                        </button>
+                    </td>
+                `;
+            });
+        }
+
+        function exportReport() {
+            // Créer un CSV simple
+            let csv = 'Date;Ticket;Caissier;Articles;Quantité;Montant;Paiement\n';
+            
+            const period = document.getElementById('reportPeriod').value;
+            let filtered = [...transactions];
+            
+            // Même filtre que loadReports()
+            const now = new Date();
+            switch(period) {
+                case 'today':
+                    const today = now.toDateString();
+                    filtered = transactions.filter(t => new Date(t.date).toDateString() === today);
+                    break;
+                case 'week':
+                    const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+                    filtered = transactions.filter(t => new Date(t.date) >= weekStart);
+                    break;
+                case 'month':
+                    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                    filtered = transactions.filter(t => new Date(t.date) >= monthStart);
+                    break;
+                case 'year':
+                    const yearStart = new Date(now.getFullYear(), 0, 1);
+                    filtered = transactions.filter(t => new Date(t.date) >= yearStart);
+                    break;
+            }
+            
+            filtered.forEach(trans => {
+                const itemCount = trans.items.reduce((sum, item) => sum + item.quantity, 0);
+                const itemNames = trans.items.map(item => `${item.name} x${item.quantity}`).join(', ');
+                csv += `${new Date(trans.date).toLocaleDateString('fr-FR')};`;
+                csv += `${trans.ticketNumber};`;
+                csv += `${trans.user};`;
+                csv += `"${itemNames}";`;
+                csv += `${itemCount};`;
+                csv += `${trans.total};`;
+                csv += `${trans.paymentMethod}\n`;
+            });
+            
+            // Télécharger
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `rapport_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            
+            showAlert('Rapport exporté', 'success');
+        }
+
+        function sendReportToWhatsApp() {
+            showAlert('Fonctionnalité WhatsApp activée', 'info');
+        }
+
+        // ==================== INITIALISATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Charger le compteur de tickets
+            const savedCounter = localStorage.getItem('ticketCounter');
+            if (savedCounter) {
+                ticketCounter = parseInt(savedCounter);
+            }
+            
+            // Gestionnaire d'événements pour la touche Entrée sur le login
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            
+            // Focus automatique sur le champ code-barre dans la caisse
+            document.getElementById('barcodeInput')?.addEventListener('focus', function() {
+                this.select();
+            });
+            
+            // Initialiser le dashboard
+            showSection('dashboard');
+            
+            // Ajouter le style pour les animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideOut {
+                    from {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateY(-20px);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
